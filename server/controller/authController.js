@@ -1,7 +1,20 @@
-exports.adminRegister= (req,res)=>{
-    console.log(req.body)
-    res.status(300).send({message:'Register'})
-}
+const {prisma} = require('../middleware/dbConnect');
+exports.adminRegister= async (req,res)=>{
+    const {name,email,role,pass} = req.body
+    try{
+    const User = await prisma.User.create({
+        data:{
+            name,
+            email,
+            role,
+            password:pass
+        }
+    });
+    res.json(User);
+}catch(err){
+   console.log(err); 
+    res.status(500).json({ error: "Something went wrong" });
+}}
 exports.adminLogin= (req,res)=>{
     console.log(req.body)
     res.status(300).send({message:'Login'})
