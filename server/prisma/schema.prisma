@@ -13,4 +13,9 @@ model User {
   role String
   createdAt  DateTime @default(now()) //current TimeStamp
   email String
+  pass String
+}
+model genre{
+  id  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
 }
