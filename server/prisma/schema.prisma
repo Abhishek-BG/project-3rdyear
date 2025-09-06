@@ -15,7 +15,20 @@ model User {
   email String
   pass String
 }
-model genre{
+model Genre{
   id  String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String?
+  name String
+  movies Movies[] //one to many relationship with Movies
+}
+model Movies{
+  id  String   @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  desc String
+  year Int
+  url String
+  bannerUrl String
+  addedAt DateTime @default(now())
+  genreId  String @db.ObjectId
+  genre Genre @relation(fields: [genreId], references: [id]) //FK
+  rating Int @default(0)
 }

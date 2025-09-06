@@ -1,5 +1,7 @@
 const {prisma }= require('../utils/dbConnector');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
 exports.adminRegister= async (req,res)=>{
     const {name,role,email,pass} = req.body
     const hashPassword = await bcrypt.hash(pass,10)//10 salts of hashing
@@ -24,9 +26,15 @@ exports.adminLogin= async (req,res)=>{
     if(!validUser) res.status(400).send({message:`User Does'nt exist`});
     const validPass =await bcrypt.compare(pass,validUser.pass);
     if(!validPass) res.status(400).send({message:`Wrong Password`});
-    res.status(200).send({message:`Login Successful`});
+    //we will generate token here and send it as response
+    const token = jwt.sign(
+        {id:validUser.id,email:email,role:'admin'},
+        process.env.JWT_SECRET_TOKEN,
+        {expiresIn:'6h'});
+    res.status(200).send({message:`Login Successful`,token:token});
     }catch(err){ 
         res.status(400).send({message:err});
+
     }
 }
 exports.userLogin = (req,res)=>{
