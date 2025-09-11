@@ -5,16 +5,22 @@ const adminController = require('../controller/adminController')
 const authenticateMiddleware = require('../middleware/authenticateMiddleware');
 const {verifyAdmin} = authenticateMiddleware;
 const {adminLogin,adminRegister,adminChangePass} = authController;
-const {getAllUsers} = adminController;
+const {getAllUsers,addGenre,addMovie,viewGenre,viewMovies,
+    editMovies,
+    deleteGenre,
+    editGenre
+} = adminController;
 
 router.post('/register',adminRegister);
-router.post('/login',adminLogin); //middleware passed
-router.get('/allUsers',verifyAdmin,getAllUsers);
-router.post('/addMovie',verifyAdmin,(req,res)=>{res.send(201)})
-router.post('/genre',verifyAdmin,(req,res)=>{res.send('genre')})
-router.get('/viewGenre',verifyAdmin,(req,res)=>{res.send(201)})
+router.post('/login',adminLogin); //generate Token
+router.get('/allUsers',verifyAdmin,getAllUsers); //middleware to check the token
+router.post('/addMovie',verifyAdmin,addMovie)
+router.post('/genre',verifyAdmin,addGenre);
+router.patch('/genre/:id',verifyAdmin,editGenre);
+router.delete('/genreDelete/:id',verifyAdmin,deleteGenre);
+router.get('/viewGenre',verifyAdmin,viewGenre)
 router.put('/changePass/:id',verifyAdmin,adminChangePass);
-router.get('/viewMovies',verifyAdmin,(req,res)=>{res.send(201)})
-router.patch('/editMovie',verifyAdmin,(req,res)=>{res.send(201)})
+router.get('/viewMovies',verifyAdmin,viewMovies)
+router.patch('/editMovie/:id',verifyAdmin,editMovies);
 
 module.exports = router;
