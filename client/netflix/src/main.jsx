@@ -10,6 +10,8 @@ import Register from './components/common/register';
 import AdminDash from './components/adminUi/adminDash';
 import AddMovie from  './components/adminUi/addMovie';
 import AddGenre from  './components/adminUi/addGenre';
+import ViewMovies from './components/userUi/viewMovies'
+import WatchMovie from './components/userUi/watchMovie'
 createRoot(root).render(
   <BrowserRouter>
     <Header />
@@ -19,6 +21,8 @@ createRoot(root).render(
          <Route path="/signup" element={<Register/>} />
           <Route path="/add-movie" element={<AddMovie/>} />
            <Route path="/add-genre" element={<AddGenre/>} />
+          <Route path="/view-movie" element={<ViewMovies/>} />
+          <Route path="/watch/:id" element={<WatchMovie/>} />
     </Routes>
 
   </BrowserRouter>

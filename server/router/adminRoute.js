@@ -8,19 +8,21 @@ const {adminLogin,adminRegister,adminChangePass} = authController;
 const {getAllUsers,addGenre,addMovie,viewGenre,viewMovies,
     editMovies,
     deleteGenre,
-    editGenre
+    editGenre,
+    deleteMovie
 } = adminController;
 
 router.post('/register',adminRegister);
 router.post('/login',adminLogin); //generate Token
 router.get('/allUsers',verifyAdmin,getAllUsers); //middleware to check the token
 router.post('/addMovie',verifyAdmin,addMovie)
+router.post('/deleteMovie/:id',deleteMovie)
 router.post('/genre',verifyAdmin,addGenre);
 router.patch('/genre/:id',verifyAdmin,editGenre);
 router.delete('/genreDelete/:id',verifyAdmin,deleteGenre);
 router.get('/viewGenre',verifyAdmin,viewGenre)
 router.put('/changePass/:id',verifyAdmin,adminChangePass);
-router.get('/viewMovies',verifyAdmin,viewMovies)
+router.get('/viewMovies',viewMovies)
 router.patch('/editMovie/:id',verifyAdmin,editMovies);
 
 module.exports = router;

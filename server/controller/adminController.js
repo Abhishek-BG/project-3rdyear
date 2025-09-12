@@ -21,11 +21,12 @@ exports.addGenre=async (req,res)=>{
 }
 exports.addMovie=async(req,res)=>{
     const {title,desc,year,url,bannerUrl,genreId}=req.body;
+    console.log(req.body);
     try{
         const movieData=await prisma.Movies.create({data:{
             title,
             desc,
-            year,
+            year:parseInt(year),
             url,
             bannerUrl,
             genreId
@@ -35,6 +36,7 @@ exports.addMovie=async(req,res)=>{
     catch(err){
         res.status(400).send({status:false,message:err})
     }
+    
 }
 
 exports.viewGenre=async(req,res)=>{
@@ -73,7 +75,16 @@ exports.editMovies = async (req,res)=>{
 
 }
 
-
+exports.deleteMovie = async (req,res)=>{
+    const movieId = req.params.id;
+    try{
+        const deleteMovie = await prisma.Movies.delete({where:{id:movieId}})
+        res.status(201).send({status:true,message:'Deleted Successfully'});
+    }
+    catch(err){
+        res.status(200).send({status:false,message:err});
+    }
+}
 exports.deleteGenre = async (req,res)=>{
     console.log(req.params.id);
     const genreId = req.params.id;
