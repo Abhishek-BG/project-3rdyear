@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skelo QC: Problem JSON Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #d0d0d0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 2px solid #000;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .form-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .form-row {
+            border-bottom: 1px solid #d0d0d0;
+        }
+        
+        .form-row:hover {
+            background: #fafafa;
+        }
+        
+        .form-label {
+            width: 200px;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 13px;
+            background: #f5f5f5;
+            border-right: 1px solid #d0d0d0;
+            vertical-align: top;
+        }
+        
+        .form-input {
+            padding: 15px 20px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+            font-size: 13px;
+            font-family: 'Calibri', 'Arial', sans-serif;
+            background: white;
+        }
+        
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border: 1px solid #000;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+        
+        .code-textarea {
+            font-family: 'Courier New', monospace;
+            min-height: 150px;
+            font-size: 12px;
+        }
+        
+        .array-section {
+            margin: 10px 0;
+        }
+        
+        .array-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d0d0d0;
+            margin: 10px 0;
+        }
+        
+        .array-table th {
+            background: #f0f0f0;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            border: 1px solid #d0d0d0;
+        }
+        
+        .array-table td {
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+        }
+        
+        .array-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #d0d0d0;
+            font-size: 12px;
+        }
+        
+        .array-table input:focus {
+            border: 1px solid #000;
+            outline: none;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #000;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .btn:active {
+            background: #e0e0e0;
+        }
+        
+        .btn-remove {
+            padding: 4px 12px;
+            font-size: 11px;
+        }
+        
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .language-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #d0d0d0;
+            background: white;
+        }
+        
+        .language-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .language-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+        
+        .language-item label {
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .language-item.selected {
+            background: #000;
+            color: white;
+        }
+        
+        .actions-bar {
+            padding: 20px 30px;
+            border-top: 2px solid #000;
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            padding: 12px 40px;
+            background: #000;
+            color: white;
+            border: 1px solid #000;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn-secondary {
+            padding: 12px 40px;
+            background: white;
+            color: #000;
+            border: 1px solid #000;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f0f0;
+        }
+        
+        .output-section {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #d0d0d0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .output-section.show {
+            display: block;
+        }
+        
+        .output-header {
+            padding: 15px 20px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #d0d0d0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .output-title {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .json-output {
+            padding: 20px;
+            background: white;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #d0d0d0;
+            margin: 20px;
+        }
+        
+        .json-output pre {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0;
+            color: #000;
+        }
+        
+        .cell-number {
+            width: 40px;
+            text-align: center;
+            background: #f5f5f5;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .note {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .status-message {
+            padding: 15px 20px;
+            margin: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Skelo QC: Problem JSON Generator</h1>
+            <p class="subtitle">Fill in the cells below to generate and save problem data</p>
+        </div>
+        
+        <div style="padding: 15px 30px; background: #fafafa; border-bottom: 1px solid #d0d0d0; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 13px; color: #666;">
+                <strong>Quick Navigation:</strong>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="/view-problems" class="btn">View All Problems</a>
+            </div>
+        </div>
+        
+        <table class="form-table">
+            <tr class="form-row">
+                <td class="form-label">Author</td>
+                <td class="form-input">
+                    <input type="text" id="author" placeholder="Enter author name">
+                </td>
+            </tr>
+
+            <tr class="form-row">
+                <td class="form-label">Created Date</td>
+                <td class="form-input">
+                    <input type="date" id="createdDate">
+                </td>
+            </tr>
+
+            <tr class="form-row">
+                <td class="form-label">Problem Topic</td>
+                <td class="form-input">
+                    <select id="problemTopic">
+                        <option value="">Select Topic</option>
+                        <option value="Patterns">Patterns</option>
+                        <option value="Bit Manipulation">Bit Manipulation</option>
+                        <option value="Arrays">Arrays</option>
+                        <option value="Number Theory">Number Theory</option>
+                        <option value="Strings">Strings</option>
+                        <option value="Series & Sequences">Series & Sequences</option>
+                        <option value="Simulation Problems">Simulation Problems</option>
+                        <option value="Digit-based Problems">Digit-based Problems</option>
+                        <option value="Recursion">Recursion</option>
+                        <option value="Dynamic Programming">Dynamic Programming</option>
+                        <option value="Greedy Algorithms">Greedy Algorithms</option>
+                        <option value="Graph Algorithms">Graph Algorithms</option>
+                        <option value="Tree Algorithms">Tree Algorithms</option>
+                        <option value="Backtracking">Backtracking</option>
+                        <option value="Hashing">Hashing</option>
+                        <option value="Sliding Window">Sliding Window</option>
+                        <option value="Two Pointers">Two Pointers</option>
+                        <option value="Linked Lists">Linked Lists</option>
+                        <option value="Stacks & Queues">Stacks & Queues</option>
+                        <option value="Heap & Priority Queue">Heap & Priority Queue</option>
+                        <option value="Divide and Conquer">Divide and Conquer</option>
+                        <option value="Mathematical Problems">Mathematical Problems</option>
+                        <option value="Combinatorics">Combinatorics</option>
+                        <option value="Bitmasking">Bitmasking</option>
+                        <option value="Graph Traversals">Graph Traversals</option>
+                        <option value="Shortest Path Algorithms">Shortest Path Algorithms</option>
+                        <option value="Union-Find / Disjoint Set">Union-Find / Disjoint Set</option>
+                        <option value="Segment Trees">Segment Trees</option>
+                        <option value="Fenwick Trees / BIT">Fenwick Trees / BIT</option>
+                        <option value="Trie Data Structure">Trie Data Structure</option>
+                        <option value="Topological Sorting">Topological Sorting</option>
+                        <option value="String Matching / KMP">String Matching / KMP</option>
+                        <option value="Greedy Graph Problems">Greedy Graph Problems</option>
+                        <option value="Recursion with Memoization">Recursion with Memoization</option>
+                        <option value="Graph Coloring Problems">Graph Coloring Problems</option>
+                        <option value="Game Theory">Game Theory</option>
+                        <option value="Geometry / Computational Geometry">Geometry / Computational Geometry</option>
+                        <option value="Probability & Expected Value">Probability & Expected Value</option>
+                        <option value="Bitwise Tricks">Bitwise Tricks</option>
+                        <option value="Sliding Window Maximum">Sliding Window Maximum</option>
+                        <option value="Circular Arrays">Circular Arrays</option>
+                        <option value="Interval / Range Problems">Interval / Range Problems</option>
+                        <option value="Matrix Problems">Matrix Problems</option>
+                        <option value="Palindrome Problems">Palindrome Problems</option>
+                        <option value="Hash Map Problems">Hash Map Problems</option>
+                        <option value="Number Conversion / Base Problems">Number Conversion / Base Problems</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr class="form-row">
+                <td class="form-label">1. Problem Title</td>
+                <td class="form-input">
+                    <input type="text" id="problemTitle" placeholder="Enter problem title">
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">2. Problem Description</td>
+                <td class="form-input">
+                    <textarea id="problemDescription" placeholder="Enter detailed problem description"></textarea>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">3. Example Input & Output</td>
+                <td class="form-input">
+                    <div class="array-section">
+                        <table class="array-table" id="examplesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                    <th style="width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examplesContainer">
+                            </tbody>
+                        </table>
+                        <button class="btn" onclick="addExample()">Add Example</button>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">4. Difficulty</td>
+                <td class="form-input">
+                    <select id="difficulty">
+                        <option value="">Select difficulty</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">5. Supported Languages</td>
+                <td class="form-input">
+                    <div class="language-grid">
+                        <div class="language-item">
+                            <input type="checkbox" id="lang-java" value="Java" onchange="updateLanguageStyle(this)">
+                            <label for="lang-java">Java</label>
+                        </div>
+                        <div class="language-item">
+                            <input type="checkbox" id="lang-c" value="C" onchange="updateLanguageStyle(this)">
+                            <label for="lang-c">C</label>
+                        </div>
+                        <div class="language-item">
+                            <input type="checkbox" id="lang-cpp" value="C++" onchange="updateLanguageStyle(this)">
+                            <label for="lang-cpp">C++</label>
+                        </div>
+                        <div class="language-item">
+                            <input type="checkbox" id="lang-python" value="Python" onchange="updateLanguageStyle(this)">
+                            <label for="lang-python">Python</label>
+                        </div>
+                        <div class="language-item">
+                            <input type="checkbox" id="lang-js" value="JavaScript" onchange="updateLanguageStyle(this)">
+                            <label for="lang-js">JavaScript</label>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">6. Validation Code</td>
+                <td class="form-input">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px;">Language:</label>
+                        <select id="validationLanguage">
+                            <option value="">Select language</option>
+                            <option value="Java">Java</option>
+                            <option value="C">C</option>
+                            <option value="C++">C++</option>
+                            <option value="Python">Python</option>
+                            <option value="JavaScript">JavaScript</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px;">Code:</label>
+                        <textarea id="validationCode" class="code-textarea" placeholder="Enter validation code"></textarea>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">7. Total Test Cases</td>
+                <td class="form-input">
+                    <input type="number" id="totalTestCases" value="0" readonly style="background: #f5f5f5;">
+                    <p class="note">Auto-calculated based on test cases below</p>
+                </td>
+            </tr>
+            
+            <tr class="form-row">
+                <td class="form-label">8. Test Cases</td>
+                <td class="form-input">
+                    <div class="array-section">
+                        <table class="array-table" id="testCasesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                    <th style="width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testCasesContainer">
+                            </tbody>
+                        </table>
+                        <button class="btn" onclick="addTestCase()">Add Test Case</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="actions-bar">
+            <button class="btn-primary" onclick="saveToDatabase()">Save to Database</button>
+            <button class="btn-secondary" onclick="generateJSON()">View JSON</button>
+        </div>
+    </div>
+    
+    <div id="statusMessage" class="status-message"></div>
+
+    <div id="outputSection" class="output-section">
+        <div class="output-header">
+            <div class="output-title">Generated JSON</div>
+            <button class="btn" id="copyBtn" onclick="copyJSON()">Copy to Clipboard</button>
+        </div>
+        <div class="json-output">
+            <pre id="jsonOutput"></pre>
+        </div>
+    </div>
+
+    <script>
+        let exampleCount = 0;
+        let testCaseCount = 0;
+        
+        window.onload = function() {
+            // Set today's date as default
+            document.getElementById('createdDate').valueAsDate = new Date();
+            addExample();
+            addTestCase();
+        };
+        
+        function addExample() {
+            exampleCount++;
+            const container = document.getElementById('examplesContainer');
+            const row = document.createElement('tr');
+            row.id = `example-${exampleCount}`;
+            
+            row.innerHTML = `
+                <td class="cell-number">${exampleCount}</td>
+                <td><input type="text" id="example-input-${exampleCount}" placeholder="Enter input"></td>
+                <td><input type="text" id="example-output-${exampleCount}" placeholder="Enter output"></td>
+                <td><button class="btn btn-remove" onclick="removeExample(${exampleCount})">Remove</button></td>
+            `;
+            
+            container.appendChild(row);
+        }
+        
+        function removeExample(id) {
+            const element = document.getElementById(`example-${id}`);
+            if (element) {
+                element.remove();
+            }
+        }
+        
+        function addTestCase() {
+            testCaseCount++;
+            updateTotalTestCases();
+            
+            const container = document.getElementById('testCasesContainer');
+            const row = document.createElement('tr');
+            row.id = `testcase-${testCaseCount}`;
+            
+            row.innerHTML = `
+                <td class="cell-number">${testCaseCount}</td>
+                <td><input type="text" id="testcase-input-${testCaseCount}" placeholder="Enter input"></td>
+                <td><input type="text" id="testcase-output-${testCaseCount}" placeholder="Enter output"></td>
+                <td><button class="btn btn-remove" onclick="removeTestCase(${testCaseCount})">Remove</button></td>
+            `;
+            
+            container.appendChild(row);
+        }
+        
+        function removeTestCase(id) {
+            const element = document.getElementById(`testcase-${id}`);
+            if (element) {
+                element.remove();
+                updateTotalTestCases();
+            }
+        }
+        
+        function updateTotalTestCases() {
+            const container = document.getElementById('testCasesContainer');
+            const count = container.querySelectorAll('tr').length;
+            document.getElementById('totalTestCases').value = count;
+        }
+        
+        function updateLanguageStyle(checkbox) {
+            const item = checkbox.closest('.language-item');
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        }
+
+        function collectFormData() {
+            const author = document.getElementById('author').value.trim();
+            const createdDate = document.getElementById('createdDate').value;
+            const problemTopic = document.getElementById('problemTopic').value.trim();
+            const title = document.getElementById('problemTitle').value.trim();
+            const description = document.getElementById('problemDescription').value.trim();
+            const difficulty = document.getElementById('difficulty').value;
+            const validationLanguage = document.getElementById('validationLanguage').value;
+            const validationCode = document.getElementById('validationCode').value.trim();
+            
+            if (!author) {
+                alert('Please enter author name');
+                return null;
+            }
+            if (!createdDate) {
+                alert('Please select a created date');
+                return null;
+            }
+            if (!problemTopic) {
+                alert('Please enter problem topic');
+                return null;
+            }
+            if (!title) {
+                alert('Please enter a problem title');
+                return null;
+            }
+            if (!description) {
+                alert('Please enter a problem description');
+                return null;
+            }
+            if (!difficulty) {
+                alert('Please select a difficulty level');
+                return null;
+            }
+            if (!validationLanguage) {
+                alert('Please select a validation code language');
+                return null;
+            }
+            if (!validationCode) {
+                alert('Please enter validation code');
+                return null;
+            }
+            
+            const languageCheckboxes = document.querySelectorAll('.language-item input[type="checkbox"]:checked');
+            const languages = Array.from(languageCheckboxes).map(cb => cb.value);
+            
+            if (languages.length === 0) {
+                alert('Please select at least one supported language');
+                return null;
+            }
+            
+            const examples = [];
+            const exampleRows = document.getElementById('examplesContainer').querySelectorAll('tr');
+            exampleRows.forEach((row) => {
+                const id = row.id.split('-')[1];
+                const inputEl = document.getElementById(`example-input-${id}`);
+                const outputEl = document.getElementById(`example-output-${id}`);
+                if (inputEl && outputEl) {
+                    const input = inputEl.value.trim();
+                    const output = outputEl.value.trim();
+                    if (input && output) {
+                        examples.push({ input, output });
+                    }
+                }
+            });
+            
+            if (examples.length === 0) {
+                alert('Please add at least one example');
+                return null;
+            }
+            
+            const testCases = [];
+            const testCaseRows = document.getElementById('testCasesContainer').querySelectorAll('tr');
+            let testCaseNumber = 1;
+            testCaseRows.forEach((row) => {
+                const id = row.id.split('-')[1];
+                const inputEl = document.getElementById(`testcase-input-${id}`);
+                const outputEl = document.getElementById(`testcase-output-${id}`);
+                if (inputEl && outputEl) {
+                    const input = inputEl.value.trim();
+                    const output = outputEl.value.trim();
+                    if (input && output) {
+                        testCases.push({
+                            test_case: testCaseNumber++,
+                            input,
+                            output
+                        });
+                    }
+                }
+            });
+            
+            if (testCases.length === 0) {
+                alert('Please add at least one test case');
+                return null;
+            }
+            
+            return {
+                "Author": author,
+                "Created Date": createdDate,
+                "Problem Topic": problemTopic,
+                "Problem Title": title,
+                "Problem Description": description,
+                "Example Input & Output": examples,
+                "Difficulty": difficulty,
+                "Supported Languages": languages,
+                "Validation Code": {
+                    "language": validationLanguage,
+                    "code": validationCode
+                },
+                "Total Test Cases": testCases.length,
+                "Test Cases": testCases
+            };
+        }
+        
+        function generateJSON() {
+            const jsonData = collectFormData();
+            if (!jsonData) return;
+            
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.textContent = JSON.stringify(jsonData, null, 2);
+            
+            document.getElementById('outputSection').classList.add('show');
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function saveToDatabase() {
+            const jsonData = collectFormData();
+            if (!jsonData) return;
+
+            try {
+                const response = await fetch('/api/problems', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showStatus('Problem saved successfully! ID: ' + result.id, 'success');
+                    // Optional: Clear form after successful save
+                    // clearForm();
+                } else {
+                    showStatus('Error: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Failed to save: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-message ' + type + ' show';
+            
+            setTimeout(() => {
+                statusDiv.classList.remove('show');
+            }, 5000);
+
+            statusDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function copyJSON() {
+            const jsonText = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(jsonText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

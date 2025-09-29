@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skelo QC: View Problem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Calibri', 'Arial', sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #d0d0d0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #000;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #000;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .btn-primary {
+            background: #000;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn-delete {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        
+        .btn-delete:hover {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .detail-row {
+            border-bottom: 1px solid #d0d0d0;
+        }
+        
+        .detail-label {
+            width: 200px;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 13px;
+            background: #f5f5f5;
+            border-right: 1px solid #d0d0d0;
+            vertical-align: top;
+        }
+        
+        .detail-value {
+            padding: 15px 20px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-easy {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-hard {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .lang-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .lang-tag {
+            background: #e0e0e0;
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #d0d0d0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .examples-table,
+        .test-cases-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d0d0d0;
+            margin-top: 10px;
+        }
+        
+        .examples-table th,
+        .test-cases-table th {
+            background: #f0f0f0;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            border: 1px solid #d0d0d0;
+        }
+        
+        .examples-table td,
+        .test-cases-table td {
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        
+        .loading {
+            padding: 60px;
+            text-align: center;
+            color: #666;
+        }
+
+        .json-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #d0d0d0;
+        }
+
+        .json-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .json-output {
+            background: #f5f5f5;
+            border: 1px solid #d0d0d0;
+            padding: 20px;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .json-output pre {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .metadata {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Problem Details</h1>
+            <div class="nav-links">
+                <a href="/view-problems" class="btn">Back to List</a>
+                <a href="/" class="btn">Create New</a>
+                <button class="btn btn-delete" onclick="deleteProblem()">Delete</button>
+            </div>
+        </div>
+        
+        <div id="loadingState" class="loading">
+            Loading problem...
+        </div>
+        
+        <div id="problemContent" class="content" style="display: none;">
+            <table class="detail-table">
+                <tr class="detail-row">
+                    <td class="detail-label">Author</td>
+                    <td class="detail-value" id="author"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Created Date</td>
+                    <td class="detail-value" id="createdDate"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Problem Topic</td>
+                    <td class="detail-value" id="problemTopic"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Problem Title</td>
+                    <td class="detail-value" id="problemTitle"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Problem Description</td>
+                    <td class="detail-value" id="problemDescription"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Difficulty</td>
+                    <td class="detail-value" id="difficulty"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Supported Languages</td>
+                    <td class="detail-value">
+                        <div class="lang-tags" id="languages"></div>
+                    </td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Example Input & Output</td>
+                    <td class="detail-value">
+                        <table class="examples-table" id="examplesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                </tr>
+                            </thead>
+                            <tbody id="examplesBody">
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Validation Code</td>
+                    <td class="detail-value">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Language:</strong> <span id="codeLanguage"></span>
+                        </div>
+                        <div class="code-block" id="validationCode"></div>
+                    </td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Total Test Cases</td>
+                    <td class="detail-value" id="totalTestCases"></td>
+                </tr>
+                <tr class="detail-row">
+                    <td class="detail-label">Test Cases</td>
+                    <td class="detail-value">
+                        <table class="test-cases-table" id="testCasesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Input</th>
+                                    <th>Output</th>
+                                </tr>
+                            </thead>
+                            <tbody id="testCasesBody">
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="json-section">
+                <div class="json-header">
+                    <h2 class="section-title">JSON Format</h2>
+                    <button class="btn" onclick="copyJSON()">Copy JSON</button>
+                </div>
+                <div class="json-output">
+                    <pre id="jsonOutput"></pre>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="metadata" id="metadata"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProblem = null;
+        const problemId = window.location.pathname.split('/').pop();
+
+        async function loadProblem() {
+            try {
+                const response = await fetch(`/api/problems/${problemId}`);
+                if (!response.ok) {
+                    throw new Error('Problem not found');
+                }
+                
+                currentProblem = await response.json();
+                displayProblem(currentProblem);
+                
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('problemContent').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loadingState').innerHTML = `
+                    <h2>Error Loading Problem</h2>
+                    <p>${error.message}</p>
+                    <a href="/view-problems" class="btn btn-primary" style="margin-top: 20px;">Back to List</a>
+                `;
+            }
+        }
+
+        function displayProblem(problem) {
+            document.getElementById('author').textContent = problem.author;
+            document.getElementById('createdDate').textContent = new Date(problem.createdDate).toLocaleDateString();
+            document.getElementById('problemTopic').textContent = problem.problemTopic || 'N/A';
+            document.getElementById('problemTitle').textContent = problem.problemTitle;
+            document.getElementById('problemDescription').textContent = problem.problemDescription;
+            
+            const difficultyClass = `badge-${problem.difficulty.toLowerCase()}`;
+            document.getElementById('difficulty').innerHTML = `<span class="badge ${difficultyClass}">${problem.difficulty}</span>`;
+            
+            const languagesDiv = document.getElementById('languages');
+            languagesDiv.innerHTML = problem.supportedLanguages.map(lang => 
+                `<span class="lang-tag">${escapeHtml(lang)}</span>`
+            ).join('');
+            
+            const examplesBody = document.getElementById('examplesBody');
+            examplesBody.innerHTML = problem.exampleInputOutput.map((example, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${escapeHtml(example.input)}</td>
+                    <td>${escapeHtml(example.output)}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('codeLanguage').textContent = problem.validationCode.language;
+            document.getElementById('validationCode').textContent = problem.validationCode.code;
+            
+            document.getElementById('totalTestCases').textContent = problem.totalTestCases;
+            
+            const testCasesBody = document.getElementById('testCasesBody');
+            testCasesBody.innerHTML = problem.testCases.map(testCase => `
+                <tr>
+                    <td>${testCase.test_case}</td>
+                    <td>${escapeHtml(testCase.input)}</td>
+                    <td>${escapeHtml(testCase.output)}</td>
+                </tr>
+            `).join('');
+
+            // Generate JSON
+            const jsonData = {
+                "Author": problem.author,
+                "Created Date": problem.createdDate,
+                "Problem Topic": problem.problemTopic,
+                "Problem Title": problem.problemTitle,
+                "Problem Description": problem.problemDescription,
+                "Example Input & Output": problem.exampleInputOutput,
+                "Difficulty": problem.difficulty,
+                "Supported Languages": problem.supportedLanguages,
+                "Validation Code": problem.validationCode,
+                "Total Test Cases": problem.totalTestCases,
+                "Test Cases": problem.testCases
+            };
+            
+            document.getElementById('jsonOutput').textContent = JSON.stringify(jsonData, null, 2);
+
+            // Metadata
+            const metadata = document.getElementById('metadata');
+            metadata.innerHTML = `
+                <span><strong>ID:</strong> ${problem._id}</span>
+                <span><strong>Created:</strong> ${new Date(problem.createdAt).toLocaleString()}</span>
+                <span><strong>Updated:</strong> ${new Date(problem.updatedAt).toLocaleString()}</span>
+            `;
+        }
+
+        async function deleteProblem() {
+            if (!confirm('Are you sure you want to delete this problem? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/problems/${problemId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to delete problem');
+                
+                alert('Problem deleted successfully');
+                window.location.href = '/view-problems';
+            } catch (error) {
+                alert('Error deleting problem: ' + error.message);
+            }
+        }
+
+        function copyJSON() {
+            const jsonText = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(jsonText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        window.onload = loadProblem;
+    </script>
+</body>
+</html>
