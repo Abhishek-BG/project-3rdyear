@@ -330,7 +330,7 @@
                 <strong>Quick Navigation:</strong>
             </div>
             <div style="display: flex; gap: 10px;">
-                <a href="/view-problems" class="btn">View All Problems</a>
+                <a href="/" class="btn">View All Problems</a>
             </div>
         </div>
         
@@ -565,12 +565,23 @@
             const row = document.createElement('tr');
             row.id = `example-${exampleCount}`;
             
-            row.innerHTML = `
-                <td class="cell-number">${exampleCount}</td>
-                <td><input type="text" id="example-input-${exampleCount}" placeholder="Enter input"></td>
-                <td><input type="text" id="example-output-${exampleCount}" placeholder="Enter output"></td>
-                <td><button class="btn btn-remove" onclick="removeExample(${exampleCount})">Remove</button></td>
-            `;
+row.innerHTML = `
+    <td class="cell-number">${exampleCount}</td>
+    <td>
+        <textarea id="example-input-${exampleCount}" 
+                  placeholder="Enter input" 
+                  rows="3" cols="30"></textarea>
+    </td>
+    <td>
+        <textarea id="example-output-${exampleCount}" 
+                  placeholder="Enter output" 
+                  rows="3" cols="30"></textarea>
+    </td>
+    <td>
+        <button class="btn btn-remove" onclick="removeExample(${exampleCount})">Remove</button>
+    </td>
+`;
+
             
             container.appendChild(row);
         }
@@ -590,12 +601,23 @@
             const row = document.createElement('tr');
             row.id = `testcase-${testCaseCount}`;
             
-            row.innerHTML = `
-                <td class="cell-number">${testCaseCount}</td>
-                <td><input type="text" id="testcase-input-${testCaseCount}" placeholder="Enter input"></td>
-                <td><input type="text" id="testcase-output-${testCaseCount}" placeholder="Enter output"></td>
-                <td><button class="btn btn-remove" onclick="removeTestCase(${testCaseCount})">Remove</button></td>
-            `;
+        row.innerHTML = `
+    <td class="cell-number">${testCaseCount}</td>
+    <td>
+        <textarea id="testcase-input-${testCaseCount}" 
+                  placeholder="Enter input" 
+                  rows="3" cols="30"></textarea>
+    </td>
+    <td>
+        <textarea id="testcase-output-${testCaseCount}" 
+                  placeholder="Enter output" 
+                  rows="3" cols="30"></textarea>
+    </td>
+    <td>
+        <button class="btn btn-remove" onclick="removeTestCase(${testCaseCount})">Remove</button>
+    </td>
+`;
+
             
             container.appendChild(row);
         }
