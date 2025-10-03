@@ -27,7 +27,7 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/problemsDB';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://dbabhi:dbabhi@cluster0.38c4tqg.mongodb.net/mydata?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
